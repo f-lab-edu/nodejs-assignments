@@ -6,6 +6,7 @@ import { AuthService } from './services/auth.service';
 import { TokenService } from './services/token.service';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
+import { AuthResolver } from './resolvers/auth.resolver';
 import { UsersModule } from '../users/users.module';
 
 @Module({
@@ -28,6 +29,7 @@ import { UsersModule } from '../users/users.module';
     TokenService,
     JwtStrategy,
     JwtAuthGuard,
+    AuthResolver,
   ],
   exports: [
     AuthService,

@@ -1,0 +1,36 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Device {
+  id           String    @id @default(cuid())
+  userId       String
+  deviceId     String    @unique
+  deviceName   String
+  deviceType   String?   // "mobile", "desktop", "tv", etc.
+  lastActiveAt DateTime  @default(now())
+  createdAt    DateTime  @default(now())
+  sessions     Session[]
+  
+  @@index([userId])
+  @@map("devices")
+}
+
+model Session {
+  id        String    @id @default(cuid())
+  deviceId  String
+  token     String    @unique
+  expiresAt DateTime
+  isActive  Boolean   @default(true)
+  device    Device    @relation(fields: [deviceId], references: [id], onDelete: Cascade)
+  createdAt DateTime  @default(now())
+  
+  @@index([deviceId])
+  @@index([token])
+  @@map("sessions")
+}

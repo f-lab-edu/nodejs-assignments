@@ -1,0 +1,11 @@
+{
+  "name": "device-service",
+  "version": "0.0.1",
+  "description": "Netflix Clone Device Service",
+  "scripts": {
+    "start": "nest start device-service",
+    "start:dev": "nest start device-service --watch",
+    "start:debug": "nest start device-service --debug --watch",
+    "start:prod": "node dist/apps/device-service/main"
+  }
+}

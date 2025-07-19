@@ -5,6 +5,7 @@ import { join } from 'path';
 import { HealthModule } from './health/health.module';
 import { DatabaseModule } from './common/database/database.module';
 import { UsersModule } from './users/users.module';
+import { ProfilesModule } from './profiles/profiles.module';
 
 @Module({
   imports: [
@@ -19,8 +20,9 @@ import { UsersModule } from './users/users.module';
     }),
     HealthModule,
     UsersModule,
+    ProfilesModule,
   ],
   controllers: [],
   providers: [],
 })
-export class AppModule { }
+export class AppModule {}

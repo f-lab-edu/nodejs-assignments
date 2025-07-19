@@ -7,11 +7,14 @@ import { TokenService } from './services/token.service';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { AuthResolver } from './resolvers/auth.resolver';
+import { AuthFacade } from './facades/auth.facade';
 import { UsersModule } from '../users/users.module';
+import { ProfilesModule } from '../profiles/profiles.module';
 
 @Module({
   imports: [
     UsersModule,
+    ProfilesModule,
     PassportModule.register({ defaultStrategy: 'jwt' }),
     JwtModule.registerAsync({
       imports: [ConfigModule],
@@ -30,11 +33,13 @@ import { UsersModule } from '../users/users.module';
     JwtStrategy,
     JwtAuthGuard,
     AuthResolver,
+    AuthFacade,
   ],
   exports: [
     AuthService,
     TokenService,
     JwtAuthGuard,
+    AuthFacade,
   ],
 })
 export class AuthModule {}

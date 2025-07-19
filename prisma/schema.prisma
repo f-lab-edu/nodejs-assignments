@@ -1,0 +1,55 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String    @id @default(cuid())
+  email        String    @unique
+  password     String
+  isActive     Boolean   @default(true)
+  devices      Device[]
+  profiles     Profile[]
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  @@map("users")
+}
+
+model Device {
+  id           String    @id @default(cuid())
+  userId       String
+  deviceId     String    @unique
+  deviceName   String
+  deviceType   String?   // "mobile", "desktop", "tv", etc.
+  lastActiveAt DateTime  @default(now())
+  user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt    DateTime  @default(now())
+  
+  @@index([userId])
+  @@map("devices")
+}
+
+model Profile {
+  id             String    @id @default(cuid())
+  userId         String
+  name           String
+  avatarUrl      String?
+  pin            String?   // 프로필 잠금용 PIN (해싱됨)
+  isKids         Boolean   @default(false)
+  language       String    @default("ko")
+  maturityRating String    @default("ALL") // "ALL", "7+", "13+", "16+", "18+"
+  user           User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+  
+  @@index([userId])
+  @@map("profiles")
+}

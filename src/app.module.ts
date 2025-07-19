@@ -4,6 +4,7 @@ import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { join } from 'path';
 import { HealthModule } from './health/health.module';
 import { DatabaseModule } from './common/database/database.module';
+import { UsersModule } from './users/users.module';
 
 @Module({
   imports: [
@@ -17,8 +18,9 @@ import { DatabaseModule } from './common/database/database.module';
       context: ({ req }) => ({ req }),
     }),
     HealthModule,
+    UsersModule,
   ],
   controllers: [],
   providers: [],
 })
-export class AppModule {}
+export class AppModule { }

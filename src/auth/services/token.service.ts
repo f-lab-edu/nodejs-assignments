@@ -15,8 +15,6 @@ export class TokenService {
     const payload: JwtPayload = {
       sub: user.id,
       email: user.email,
-      iat: Math.floor(Date.now() / 1000),
-      exp: Math.floor(Date.now() / 1000) + this.getAccessTokenExpiresIn(),
       ...(deviceId && { deviceId }),
     };
 
@@ -31,8 +29,6 @@ export class TokenService {
     const payload: JwtRefreshPayload = {
       sub: userId,
       tokenId,
-      iat: Math.floor(Date.now() / 1000),
-      exp: Math.floor(Date.now() / 1000) + this.getRefreshTokenExpiresIn(),
     };
 
     return this.jwtService.sign(payload, {

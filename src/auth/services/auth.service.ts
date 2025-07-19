@@ -38,8 +38,8 @@ export class AuthService {
       // 사용자 조회
       const user = await this.userService.findById(payload.sub);
 
-      if (!user.isAccountActive()) {
-        throw new UnauthorizedException('비활성화된 계정입니다.');
+      if (!user || !user.isAccountActive()) {
+        throw new UnauthorizedException('유효하지 않은 리프레시 토큰입니다.');
       }
 
       // 새로운 토큰 생성
@@ -50,6 +50,9 @@ export class AuthService {
         ...tokens,
       });
     } catch (error) {
+      if (error instanceof UnauthorizedException) {
+        throw error;
+      }
       throw new UnauthorizedException('유효하지 않은 리프레시 토큰입니다.');
     }
   }

@@ -2,6 +2,13 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
+type AuthResponse {
+  accessToken: String!
+  expiresIn: Float!
+  refreshToken: String!
+  user: User!
+}
+
 input CreateProfileInput {
   avatarUrl: String
   isKids: Boolean
@@ -21,11 +28,18 @@ A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date
 """
 scalar DateTime
 
+input LoginInput {
+  deviceId: String
+  deviceName: String
+  email: String!
+  password: String!
+}
+
 type Mutation {
   """프로필 생성"""
   createProfile(input: CreateProfileInput!): Profile!
 
-  """사용자 생성"""
+  """사용자 생성 (내부용)"""
   createUser(input: CreateUserInput!): User!
 
   """프로필 삭제"""
@@ -33,6 +47,18 @@ type Mutation {
 
   """사용자 삭제"""
   deleteUser(id: ID!): Boolean!
+
+  """사용자 로그인"""
+  login(input: LoginInput!): AuthResponse!
+
+  """JWT 토큰 갱신"""
+  refreshToken(input: RefreshTokenInput!): AuthResponse!
+
+  """사용자 회원가입 및 기본 프로필 생성"""
+  register(input: RegisterInput!): AuthResponse!
+
+  """사용자 회원가입 및 커스텀 프로필 생성"""
+  registerWithProfile(input: RegisterWithProfileInput!): AuthResponse!
 
   """프로필 정보 수정"""
   updateProfile(input: UpdateProfileInput!): Profile!
@@ -69,6 +95,21 @@ type Query {
 
   """사용자 정보 조회"""
   user(id: ID!): User!
+}
+
+input RefreshTokenInput {
+  refreshToken: String!
+}
+
+input RegisterInput {
+  email: String!
+  password: String!
+}
+
+input RegisterWithProfileInput {
+  email: String!
+  password: String!
+  profileName: String
 }
 
 input UpdateProfileInput {

@@ -28,7 +28,9 @@ export class UserRepositoryImpl implements IUserRepository {
     const user = await this.prisma.user.findUnique({
       where: { id },
       include: {
-        profiles: true,
+        profiles: {
+          orderBy: { createdAt: 'asc' },
+        },
       },
     });
 

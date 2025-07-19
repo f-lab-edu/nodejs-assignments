@@ -1,35 +1,116 @@
 version: '3.8'
 
 services:
-  postgres:
+  # Databases
+  postgres-identity:
     image: postgres:15-alpine
-    container_name: netflix-postgres
-    restart: unless-stopped
+    container_name: netflix-postgres-identity
+    environment:
+      POSTGRES_DB: identity_db
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
     ports:
       - "5432:5432"
-    environment:
-      POSTGRES_USER: netflix
-      POSTGRES_PASSWORD: netflix123
-      POSTGRES_DB: netflix_identity
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - postgres_identity_data:/var/lib/postgresql/data
+    networks:
+      - netflix-network
+
+  postgres-device:
+    image: postgres:15-alpine
+    container_name: netflix-postgres-device
+    environment:
+      POSTGRES_DB: device_db
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_device_data:/var/lib/postgresql/data
     networks:
       - netflix-network
 
   redis:
     image: redis:7-alpine
     container_name: netflix-redis
-    restart: unless-stopped
     ports:
-      - "6380:6379"
-    command: redis-server --appendonly yes
+      - "6379:6379"
     volumes:
       - redis_data:/data
     networks:
       - netflix-network
 
+  # Microservices
+  identity-service:
+    build:
+      context: .
+      dockerfile: apps/identity-service/Dockerfile
+    container_name: netflix-identity-service
+    environment:
+      DATABASE_URL: postgresql://user:password@postgres-identity:5432/identity_db?schema=public
+      JWT_SECRET: your-super-secret-jwt-key-change-this-in-production
+      JWT_EXPIRES_IN: 15m
+      JWT_REFRESH_EXPIRES_IN: 7d
+      REDIS_URL: redis://redis:6379
+      PORT: 3001
+    ports:
+      - "3001:3001"
+    depends_on:
+      - postgres-identity
+      - redis
+    networks:
+      - netflix-network
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:3001/api/v1/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  device-service:
+    build:
+      context: .
+      dockerfile: apps/device-service/Dockerfile
+    container_name: netflix-device-service
+    environment:
+      DATABASE_URL: postgresql://user:password@postgres-device:5432/device_db?schema=public
+      PORT: 3002
+    ports:
+      - "3002:3002"
+    depends_on:
+      - postgres-device
+    networks:
+      - netflix-network
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:3002/api/v1/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  api-gateway:
+    build:
+      context: .
+      dockerfile: apps/api-gateway/Dockerfile
+    container_name: netflix-api-gateway
+    environment:
+      IDENTITY_SERVICE_URL: http://identity-service:3001
+      DEVICE_SERVICE_URL: http://device-service:3002
+      PORT: 3000
+    ports:
+      - "3000:3000"
+    depends_on:
+      - identity-service
+      - device-service
+    networks:
+      - netflix-network
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:3000/api/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
 volumes:
-  postgres_data:
+  postgres_identity_data:
+  postgres_device_data:
   redis_data:
 
 networks:

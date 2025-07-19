@@ -1,0 +1,11 @@
+{
+  "name": "api-gateway",
+  "version": "0.0.1",
+  "description": "Netflix Clone API Gateway",
+  "scripts": {
+    "start": "nest start api-gateway",
+    "start:dev": "nest start api-gateway --watch",
+    "start:debug": "nest start api-gateway --debug --watch",
+    "start:prod": "node dist/apps/api-gateway/main"
+  }
+}

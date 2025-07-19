@@ -1,0 +1,59 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+input CreateUserInput {
+  email: String!
+  password: String!
+}
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
+type Mutation {
+  """사용자 생성"""
+  createUser(input: CreateUserInput!): User!
+
+  """사용자 삭제"""
+  deleteUser(id: ID!): Boolean!
+
+  """사용자 정보 수정"""
+  updateUser(input: UpdateUserInput!): User!
+}
+
+type Profile {
+  avatarUrl: String
+  createdAt: DateTime!
+  id: ID!
+  isKids: Boolean!
+  language: String!
+  maturityRating: String!
+  name: String!
+  updatedAt: DateTime!
+  user: User
+  userId: String!
+}
+
+type Query {
+  """현재 로그인한 사용자 정보 조회"""
+  me: User!
+
+  """사용자 정보 조회"""
+  user(id: ID!): User!
+}
+
+input UpdateUserInput {
+  id: ID!
+  isActive: Boolean
+}
+
+type User {
+  createdAt: DateTime!
+  email: String!
+  id: ID!
+  isActive: Boolean!
+  profiles: [Profile!]
+  updatedAt: DateTime!
+}
